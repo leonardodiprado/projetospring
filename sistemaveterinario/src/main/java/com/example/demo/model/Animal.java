@@ -4,38 +4,32 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Min;
 
 @MappedSuperclass
-public abstract class Animal implements ProcedimentoMedico {
+public abstract class Animal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank(message = "O nome do animal não pode estar em branco")
     private String nome;
+
+    @Min(value = 0, message = "A idade do animal não pode ser negativa.")
     private int idade;
-    private int cpfProprietario;
+
+    private String racaEspecie;
 
     public Animal() {
     }
 
-    public Animal(String nome, int idade, int cpfProprietario) {
-        if (!validarNome(nome)) {
-            System.out.println("O nome do animal não pode estar em branco");
-            return;
-        }
-        if (!validarIdade(idade)) {
-            System.out.println("A idade do animal não pode ser negativa.");
-            return;
-        }
-        if (!validarCpfProprietario(cpfProprietario)) {
-            return;
-        }
+    public Animal(String nome, int idade, String racaEspecie) {
         this.nome = nome;
         this.idade = idade;
-        this.cpfProprietario = cpfProprietario;
+        this.racaEspecie = racaEspecie;
     }
-
-    public abstract String emitirSom();
 
     public Long getId() {
         return id;
@@ -50,11 +44,7 @@ public abstract class Animal implements ProcedimentoMedico {
     }
 
     public void setNome(String nome) {
-        if (validarNome(nome)) {
-            this.nome = nome;
-        } else {
-            System.out.println("O nome do animal não pode estar em branco");
-        }
+        this.nome = nome;
     }
 
     public int getIdade() {
@@ -62,34 +52,15 @@ public abstract class Animal implements ProcedimentoMedico {
     }
 
     public void setIdade(int idade) {
-        if (validarIdade(idade)) {
-            this.idade = idade;
-        } else {
-            System.out.println("A idade do animal não pode ser negativa.");
-        }
+        this.idade = idade;
     }
 
-    public int getCpfProprietario() {
-        return cpfProprietario;
+    public String getRacaEspecie() {
+        return racaEspecie;
     }
 
-    public void setCpfProprietario(int cpfProprietario) {
-        if (validarCpfProprietario(cpfProprietario)) {
-            this.cpfProprietario = cpfProprietario;
-        } else {
-            System.out.println("O CPF do proprietário não pode ser negativo.");
-        }
+    public void setRacaEspecie(String racaEspecie) {
+        this.racaEspecie = racaEspecie;
     }
 
-    private boolean validarNome(String nome) {
-        return nome != null && !nome.trim().isEmpty();
-    }
-
-    private boolean validarIdade(int idade) {
-        return idade >= 0;
-    }
-
-    private boolean validarCpfProprietario(int cpfProprietario) {
-        return cpfProprietario >= 0;
-    }
 }

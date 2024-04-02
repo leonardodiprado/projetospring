@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CachorroService {
+public class CachorroService implements AnimalService {
 
     private final CachorroRepository cachorroRepository;
 
@@ -18,16 +18,8 @@ public class CachorroService {
         this.cachorroRepository = cachorroRepository;
     }
 
-    public List<Cachorro> getAllCachorros() {
+    public List<Cachorro> listarCachorros() {
         return cachorroRepository.findAll();
-    }
-
-    public long contarTotalCachorros() {
-        return cachorroRepository.count();
-    }
-
-    public Optional<Cachorro> getCachorroById(Long id) {
-        return cachorroRepository.findById(id);
     }
 
     public Cachorro criarCachorro(Cachorro cachorro) {
@@ -35,7 +27,7 @@ public class CachorroService {
     }
 
     public Cachorro atualizarCachorro(Long id, Cachorro cachorro) {
-        Optional<Cachorro> optionalCachorro = getCachorroById(id);
+        Optional<Cachorro> optionalCachorro = cachorroRepository.findById(id);
         if (optionalCachorro.isPresent()) {
             cachorro.setId(id);
             return cachorroRepository.save(cachorro);
@@ -51,8 +43,29 @@ public class CachorroService {
         return false;
     }
 
-    public List<Cachorro> listarCachorros() {
-        return cachorroRepository.findAll();
+    public boolean verificarSeEhFilhote(Long id) {
+        Optional<Cachorro> optionalCachorro = cachorroRepository.findById(id);
+        return optionalCachorro.map(cachorro -> cachorro.getIdade() < 1).orElse(false);
+    }
+
+    public int calcularIdadeEmAnosHumanos(Long id) {
+        Optional<Cachorro> optionalCachorro = cachorroRepository.findById(id);
+        return optionalCachorro.map(cachorro -> cachorro.getIdade() * 7).orElse(-1);
+    }
+
+    public List<Cachorro> listarCachorrosComPelagemBranca() {
+        return cachorroRepository.findByCorPelagemIgnoreCase("branco");
+    }
+
+    @Override
+    public int quantidade() {
+        return (int) cachorroRepository.count();
+    }
+
+    @Override
+    public double calcularMediaIdade() {
+        List<Cachorro> cachorros = cachorroRepository.findAll();
+        int totalIdade = cachorros.stream().mapToInt(Cachorro::getIdade).sum();
+        return cachorros.isEmpty() ? 0 : (double) totalIdade / cachorros.size();
     }
 }
-

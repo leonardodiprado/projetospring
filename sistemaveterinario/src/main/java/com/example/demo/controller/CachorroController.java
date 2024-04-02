@@ -22,11 +22,6 @@ public class CachorroController {
         return cachorroService.listarCachorros();
     }
 
-    @GetMapping("/contar")
-    public long contarTotalCachorros() {
-        return cachorroService.contarTotalCachorros();
-    }
-
     @PostMapping
     public Cachorro criarCachorro(@Valid @RequestBody Cachorro cachorro) {
         return cachorroService.criarCachorro(cachorro);
@@ -51,4 +46,45 @@ public class CachorroController {
         String mensagem = "O id informado não existe na base de dados";
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(mensagem);
     }
+
+    @GetMapping("/{id}/verificar-filhote")
+    public ResponseEntity<String> verificarFilhote(@PathVariable Long id) {
+        if(cachorroService.verificarSeEhFilhote(id)) {
+            return ResponseEntity.ok("O cachorro é um filhote.");
+        } else {
+            return ResponseEntity.ok("O cachorro não é um filhote.");
+        }
+    }
+
+    @GetMapping("/{id}/idade-anos-humanos")
+    public ResponseEntity<Integer> calcularIdadeEmAnosHumanos(@PathVariable Long id) {
+        int idadeEmAnosHumanos = cachorroService.calcularIdadeEmAnosHumanos(id);
+        if (idadeEmAnosHumanos >= 0) {
+            return ResponseEntity.ok(idadeEmAnosHumanos);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/pelos-brancos")
+    public ResponseEntity<List<Cachorro>> listarCachorrosComPelagemBranca() {
+        List<Cachorro> cachorros = cachorroService.listarCachorrosComPelagemBranca();
+        return ResponseEntity.ok(cachorros);
+    }
+
+    @GetMapping("/quantidade")
+    public ResponseEntity<Integer> quantidadeDeCachorros() {
+        int quantidadeCachorros = cachorroService.quantidade();
+        return ResponseEntity.ok(quantidadeCachorros);
+    }
+
+    @GetMapping("/media-idade")
+    public ResponseEntity<Double> calcularMediaIdadeCachorros() {
+        double mediaIdade = cachorroService.calcularMediaIdade();
+        return ResponseEntity.ok(mediaIdade);
+    }
+
+
+
+
 }
